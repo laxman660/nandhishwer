@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showroom Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .admin-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .admin-btn.logout {
+            background: #e74c3c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .stats h2 {
+            color: #667eea;
+            font-size: 2rem;
+        }
+
+        .brand-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .brand-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .brand-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .brand-card h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-card.honda { border-top: 5px solid #CC0000; }
+        .brand-card.hero { border-top: 5px solid #E30613; }
+        .brand-card.tvs { border-top: 5px solid #0066B2; }
+
+        .form-container {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .search-container {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-container.active {
+            display: block;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .search-box select {
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card p {
+            margin: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .result-card .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .result-card button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row strong {
+            color: #667eea;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .about-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            line-height: 1.8;
+        }
+
+        .about-content h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🏍 Showroom Management System</h1>
+        <div class="nav-links">
+            <a onclick="showPage('home')">Home</a>
+            <a onclick="showPage('search')">Search</a>
+            <a onclick="showPage('about')">About</a>
+            <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">Admin Login</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="homePage" class="page active">
+            <div class="stats">
+                <h2>Total Records: <span id="totalRecords">0</span></h2>
+            </div>
+
+            <div class="brand-grid">
+                <div class="brand-card honda" onclick="showBrandForm('Honda')">
+                    <h2>🏍 Honda</h2>
+                    <p>Click to manage Honda customers</p>
+                </div>
+                <div class="brand-card hero" onclick="showBrandForm('Hero')">
+                    <h2>🏍 Hero</h2>
+                    <p>Click to manage Hero customers</p>
+                </div>
+                <div class="brand-card tvs" onclick="showBrandForm('TVS')">
+                    <h2>🏍 TVS</h2>
+                    <p>Click to manage TVS customers</p>
+                </div>
+            </div>
+
+            <div id="brandForm" class="form-container">
+                <div class="form-header">
+                    <h2 id="formTitle">Add Customer</h2>
+                    <button class="close-btn" onclick="closeBrandForm()">Close</button>
+                </div>
+
+                <form id="customerForm">
+                    <input type="hidden" id="customerId">
+                    <input type="hidden" id="customerBrand">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Bike Name *</label>
+                            <input type="text" id="bikeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Customer Name *</label>
+                            <input type="text" id="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Engine Number *</label>
+                            <input type="text" id="engineNo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Chassis (Che IQ) Number *</label>
+                            <input type="text" id="chassisNo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number *</label>
+                            <input type="tel" id="mobile" required pattern="[0-9]{10}">
+                        </div>
+                        <div class="form-group">
+                            <label>Number Plate</label>
+                            <input type="text" id="numberPlate">
+                        </div>
+                        <div class="form-group">
+                            <label>Alternate Number</label>
+                            <input type="tel" id="alternateNo" pattern="[0-9]{10}">
+                        </div>
+                        <div class="form-group">
+                            <label>EMI Amount</label>
+                            <input type="number" id="emiAmount">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Months</label>
+                            <input type="number" id="months">
+                        </div>
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Door Number</label>
+                            <input type="text" id="doorNo">
+                        </div>
+                        <div class="form-group">
+                            <label>Street</label>
+                            <input type="text" id="street">
+                        </div>
+                        <div class="form-group">
+                            <label>Nearby Landmark</label>
+                            <input type="text" id="landmark">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Address</label>
+                            <textarea id="address"></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Additional Details</label>
+                            <textarea id="additionalDetails"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="searchPage" class="page search-container">
+            <h2 style="color: #667eea; margin-bottom: 1.5rem;">Search Customers</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by Name or Customer Code...">
+                <select id="brandFilter">
+                    <option value="">All Brands</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Hero">Hero</option>
+                    <option value="TVS">TVS</option>
+                </select>
+                <button class="btn btn-primary" onclick="searchCustomers()">Search</button>
+            </div>
+            <div id="searchResults" class="results-grid"></div>
+        </div>
+
+        <div id="aboutPage" class="page">
+            <div class="about-content">
+                <h2>About Showroom Management System</h2>
+                <p>This is a comprehensive showroom management application designed for tracking customer information, bike sales, and EMI details for Honda, Hero, and TVS brands.</p>
+                <h3 style="color: #667eea; margin-top: 2rem;">Features:</h3>
+                <ul style="margin-left: 2rem;">
+                    <li>Secure admin access for data management</li>
+                    <li>Add, edit, and delete customer records</li>
+                    <li>Search functionality by name or customer code</li>
+                    <li>Brand-wise customer organization</li>
+                    <li>EMI tracking with start and end dates</li>
+                    <li>Complete customer contact information</li>
+                    <li>Responsive design for all devices</li>
+                </ul>
+               
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="form-header">
+                <h2>Customer Details</h2>
+                <button class="close-btn" onclick="closeDetailModal()">Close</button>
+            </div>
+            <div id="detailContent"></div>
+            <div class="form-actions hidden" id="detailActions">
+                <button class="btn btn-primary" onclick="editFromDetail()">Edit</button>
+                <button class="btn btn-danger" onclick="deleteFromDetail()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <div class="form-group">
+                <label>Enter Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" onclick="verifyPassword()">Login</button>
+                <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAdminMode = false;
+        let currentCustomerId = null;
+        const ADMIN_PASSWORD = 'admin123';
+
+        function initializeApp() {
+            if (!localStorage.getItem('customers')) {
+                localStorage.setItem('customers', JSON.stringify([]));
+            }
+            updateTotalRecords();
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page + 'Page').classList.add('active');
+
+            if (page === 'search') {
+                searchCustomers();
+            }
+
+            closeBrandForm();
+        }
+
+        function toggleAdmin() {
+            if (isAdminMode) {
+                logout();
+            } else {
+                document.getElementById('passwordModal').classList.add('active');
+            }
+        }
+
+        function verifyPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdminMode = true;
+                document.getElementById('adminBtn').textContent = 'Logout';
+                document.getElementById('adminBtn').classList.add('logout');
+                closePasswordModal();
+                alert('Admin mode activated!');
+            } else {
+                alert('Incorrect password!');
+            }
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function logout() {
+            isAdminMode = false;
+            document.getElementById('adminBtn').textContent = 'Admin Login';
+            document.getElementById('adminBtn').classList.remove('logout');
+            closeBrandForm();
+            alert('Logged out successfully!');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        function showBrandForm(brand) {
+            if (!isAdminMode) {
+                alert('Please login as admin to add/edit customers.');
+                return;
+            }
+
+            document.getElementById('brandForm').classList.add('active');
+            document.getElementById('formTitle').textContent = `Add ${brand} Customer`;
+            document.getElementById('customerBrand').value = brand;
+            clearForm();
+        }
+
+        function closeBrandForm() {
+            document.getElementById('brandForm').classList.remove('active');
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('customerForm').reset();
+            document.getElementById('customerId').value = '';
+            currentCustomerId = null;
+        }
+
+        function generateCustomerId() {
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            if (customers.length === 0) return '0001';
+
+            const ids = customers.map(c => parseInt(c.id));
+            const maxId = Math.max(...ids);
+            return String(maxId + 1).padStart(4, '0');
+        }
+
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isAdminMode) {
+                alert('Admin access required!');
+                return;
+            }
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                alert('End date cannot be before start date!');
+                return;
+            }
+
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            const customerId = document.getElementById('customerId').value;
+
+            const customerData = {
+                id: customerId || generateCustomerId(),
+                brand: document.getElementById('customerBrand').value,
+                bikeName: document.getElementById('bikeName').value.trim(),
+                customerName: document.getElementById('customerName').value.trim(),
+                engineNo: document.getElementById('engineNo').value.trim(),
+                chassisNo: document.getElementById('chassisNo').value.trim(),
+                mobile: document.getElementById('mobile').value,
+                numberPlate: document.getElementById('numberPlate').value.trim(),
+                alternateNo: document.getElementById('alternateNo').value,
+                emiAmount: document.getElementById('emiAmount').value,
+                months: document.getElementById('months').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                doorNo: document.getElementById('doorNo').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                landmark: document.getElementById('landmark').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                additionalDetails: document.getElementById('additionalDetails').value.trim(),
+                createdAt: customerId ? customers.find(c => c.id === customerId).createdAt : new Date().toISOString()
+            };
+
+            if (customerId) {
+                const index = customers.findIndex(c => c.id === customerId);
+                customers[index] = customerData;
+                alert('Customer updated successfully!');
+            } else {
+                customers.push(customerData);
+                alert('Customer added successfully! Customer Code: ' + customerData.id);
+            }
+
+            localStorage.setItem('customers', JSON.stringify(customers));
+            clearForm();
+            closeBrandForm();
+            updateTotalRecords();
+        });
+
+        function updateTotalRecords() {
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            document.getElementById('totalRecords').textContent = customers.length;
+        }
+
+        function searchCustomers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const brandFilter = document.getElementById('brandFilter').value;
+            const customers = JSON.parse(localStorage.getItem('customers'));
+
+            let filtered = customers;
+
+            if (brandFilter) {
+                filtered = filtered.filter(c => c.brand === brandFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(c =>
+                    c.customerName.toLowerCase().includes(searchTerm) ||
+                    c.id.includes(searchTerm) ||
+                    c.mobile.includes(searchTerm)
+                );
+            }
+
+            displaySearchResults(filtered);
+        }
+
+        function displaySearchResults(customers) {
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (customers.length === 0) {
+                resultsContainer.innerHTML = '<p style="text-align: center; color: #999;">No customers found</p>';
+                return;
+            }
+
+            resultsContainer.innerHTML = customers.map(customer => `
+                <div class="result-card">
+                    <h3>${customer.customerName}</h3>
+                    <p><strong>Code:</strong> ${customer.id}</p>
+                    <p><strong>Brand:</strong> ${customer.brand}</p>
+                    <p><strong>Bike:</strong> ${customer.bikeName}</p>
+                    <p><strong>Mobile:</strong> ${customer.mobile}</p>
+                    <p><strong>EMI:</strong> ₹${customer.emiAmount || 'N/A'}</p>
+                    <div class="card-actions">
+                        <button onclick="viewDetails('${customer.id}')" style="background: white; color: #667eea;">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewDetails(customerId) {
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            const customer = customers.find(c => c.id === customerId);
+            currentCustomerId = customerId;
+
+            const detailContent = `
+                <div class="detail-row"><strong>Customer Code:</strong><span>${customer.id}</span></div>
+                <div class="detail-row"><strong>Brand:</strong><span>${customer.brand}</span></div>
+                <div class="detail-row"><strong>Bike Name:</strong><span>${customer.bikeName}</span></div>
+                <div class="detail-row"><strong>Customer Name:</strong><span>${customer.customerName}</span></div>
+                <div class="detail-row"><strong>Engine Number:</strong><span>${customer.engineNo}</span></div>
+                <div class="detail-row"><strong>Chassis Number:</strong><span>${customer.chassisNo}</span></div>
+                <div class="detail-row"><strong>Mobile:</strong><span>${customer.mobile}</span></div>
+                <div class="detail-row"><strong>Number Plate:</strong><span>${customer.numberPlate || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Alternate Number:</strong><span>${customer.alternateNo || 'N/A'}</span></div>
+                <div class="detail-row"><strong>EMI Amount:</strong><span>₹${customer.emiAmount || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Months:</strong><span>${customer.months || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Start Date:</strong><span>${customer.startDate || 'N/A'}</span></div>
+                <div class="detail-row"><strong>End Date:</strong><span>${customer.endDate || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Door Number:</strong><span>${customer.doorNo || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Street:</strong><span>${customer.street || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Landmark:</strong><span>${customer.landmark || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Address:</strong><span>${customer.address || 'N/A'}</span></div>
+                <div class="detail-row"><strong>Additional Details:</strong><span>${customer.additionalDetails || 'N/A'}</span></div>
+            `;
+
+            document.getElementById('detailContent').innerHTML = detailContent;
+            document.getElementById('detailActions').classList.toggle('hidden', !isAdminMode);
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+            currentCustomerId = null;
+        }
+
+        function editFromDetail() {
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            const customer = customers.find(c => c.id === currentCustomerId);
+
+            document.getElementById('customerId').value = customer.id;
+            document.getElementById('customerBrand').value = customer.brand;
+            document.getElementById('bikeName').value = customer.bikeName;
+            document.getElementById('customerName').value = customer.customerName;
+            document.getElementById('engineNo').value = customer.engineNo;
+            document.getElementById('chassisNo').value = customer.chassisNo;
+            document.getElementById('mobile').value = customer.mobile;
+            document.getElementById('numberPlate').value = customer.numberPlate;
+            document.getElementById('alternateNo').value = customer.alternateNo;
+            document.getElementById('emiAmount').value = customer.emiAmount;
+            document.getElementById('months').value = customer.months;
+            document.getElementById('startDate').value = customer.startDate;
+            document.getElementById('endDate').value = customer.endDate;
+            document.getElementById('doorNo').value = customer.doorNo;
+            document.getElementById('street').value = customer.street;
+            document.getElementById('landmark').value = customer.landmark;
+            document.getElementById('address').value = customer.address;
+            document.getElementById('additionalDetails').value = customer.additionalDetails;
+
+            document.getElementById('formTitle').textContent = `Edit ${customer.brand} Customer`;
+            document.getElementById('brandForm').classList.add('active');
+            showPage('home');
+            closeDetailModal();
+        }
+
+        function deleteFromDetail() {
+            if (!confirm('Are you sure you want to delete this customer record?')) {
+                return;
+            }
+
+            const customers = JSON.parse(localStorage.getItem('customers'));
+            const filtered = customers.filter(c => c.id !== currentCustomerId);
+            localStorage.setItem('customers', JSON.stringify(filtered));
+
+            alert('Customer deleted successfully!');
+            closeDetailModal();
+            updateTotalRecords();
+            searchCustomers();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', searchCustomers);
+        document.getElementById('brandFilter').addEventListener('change', searchCustomers);
+
+        initializeApp();
+    </script>
+</body>
+</html>
